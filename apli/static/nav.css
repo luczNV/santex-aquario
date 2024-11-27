@@ -1,0 +1,195 @@
+/* Estilos personalizados del navbar */
+.nav-custom {
+    display: flex;
+    height: 80px;
+    width: 100%;
+    background-color: rgba(8, 7, 7, .35); /* Color de fondo */
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px 0 100px;
+    flex-wrap: wrap;
+  }
+  
+  .nav-custom .logo {
+    color: #fff; /* Color de la marca/logo */
+    font-size: 35px;
+    font-weight: 600;
+  }
+  
+  .nav-custom ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+  }
+  
+  .nav-custom ul li {
+    margin: 0 5px;
+  }
+  
+  .nav-custom ul li a {
+    color: #f2f2f2;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 5px;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-custom ul li a.active,
+  .nav-custom ul li a:hover {
+    color: #212529;
+    background: #98B06F;
+  }
+  .nav-custom ul li a.active-ingresar{
+    background: #212529;
+  }
+  .nav-custom ul li a.active-salir{
+    background: #691612;
+  }
+  .nav-custom .menu-btn i {
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    display: none;
+  }
+  
+  /* Ocultar checkbox en el menú responsivo */
+  input[type="checkbox"] {
+    display: none;
+  }
+  
+  /* Media Queries para adaptaciones móviles */
+  @media (max-width: 1000px) {
+    .nav-custom {
+      padding: 0 40px 0 50px;
+    }
+  }
+  
+  @media (max-width: 920px) {
+    .nav-custom .menu-btn i {
+      display: block;
+    }
+  
+    .nav-custom ul {
+      position: fixed;
+      top: 80px;
+      left: -100%;
+      background: #111;
+      height: 100vh;
+      width: 100%;
+      text-align: center;
+      display: block;
+      transition: all 0.3s ease;
+    }
+  
+    /* Al hacer clic en el menú, mostrarlo */
+    #click:checked ~ ul {
+      left: 0;
+    }
+  
+    .nav-custom ul li {
+      width: 100%;
+      margin: 40px 0;
+    }
+  
+    .nav-custom ul li a {
+      width: 100%;
+      margin-left: -100%;
+      display: block;
+      font-size: 20px;
+      transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+  
+    #click:checked ~ ul li a {
+      margin-left: 0px;
+    }
+  
+    .nav-custom ul li a.active,
+    .nav-custom ul li a:hover {
+      background: none;
+      color: cyan;
+    }
+  }
+  
+  .content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: -1;
+    width: 100%;
+    padding: 0 30px;
+    color: #1b1b1b;
+  }
+  
+  .content div {
+    font-size: 40px;
+    font-weight: 700;
+  }
+/*productos app*/
+/* Estilo general */
+body {
+  background-color: #f4f4f4;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Tarjeta del producto */
+.producto-card {
+  width: 300px;
+  background-color: #1f1f1f;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Imagen del producto */
+.producto-imagen {
+  height: 150px;
+  object-fit: contain;
+  background-color: #e5e5e5;
+  padding: 10px;
+}
+
+/* Nombre y precio */
+.card-title,
+.card-text {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Estilo del botón */
+.btn-agregar {
+  background-color: #93b876;
+  border: none;
+  font-weight: bold;
+  color: white;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+}
+
+.btn-agregar:hover {
+  background-color: #85a668;
+}
+
+/* Espaciado entre filas */
+.row {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+/* Línea separadora entre filas */
+.row-separator {
+  border: 0;
+  height: 2px;
+  background-color: #d9d9d9;
+  margin: 20px 0;
+}
