@@ -28,9 +28,16 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'inicio' %}">Inicio</a>
                     </li>
+
+                    {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link active-ingresar" href="">Ingresar</a>
+                        <a class="nav-link active-salir" href="{% url 'logout' %}">Salir</a>
                     </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link active-ingresar" href="{% url 'account_login' %}">Ingresar</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
