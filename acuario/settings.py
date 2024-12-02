@@ -27,9 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+#Es necesario instalar "pip install django-allauth"
+#Es necesario instalar "pip install django-crispy-forms     "
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,7 +37,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apli'
+    'django.contrib.sites', 
+    'apli',
+    # Aplicaciones para django-allauth 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    # Aplicaciones para crispy y forms
+    'crispy_forms',
+    'crispy_bootstrap5'
+]
+
+# Necesario para django-allauth
+SITE_ID = 2
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Backend predeterminado
+    'allauth.account.auth_backends.AuthenticationBackend',  # Backend de allauth
 ]
 
 MIDDLEWARE = [
@@ -48,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Middleware de django-allauth
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'acuario.urls'
@@ -77,7 +100,7 @@ WSGI_APPLICATION = 'acuario.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'acuario',
+        'NAME': 'aquario',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -104,6 +127,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -126,3 +162,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Personalización de allauth
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # Permite login con username o email
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Cambiar a "mandatory" si lo necesitas
+ACCOUNT_UNIQUE_EMAIL = True
+LOGIN_REDIRECT_URL = "/"  # Redirección después de login
+LOGOUT_REDIRECT_URL = "/"  # Redirección después de logout
+
+AUTH_USER_MODEL = 'apli.User'
