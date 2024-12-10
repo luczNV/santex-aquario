@@ -1,20 +1,167 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="container mt-5 pt-5">
-    <h2 class="mb-4 text-center">Carrito de Compras</h2>
+<div class="container mt-5">
     <div class="row">
+        <!-- Lista de productos -->
         <div class="col-lg-8">
-            <div id="productos-lista" class="d-flex flex-column gap-3">
+            <div class="product-list">
+                {% for item in items %}
+                <div class="product-item d-flex align-items-center justify-content-between bg-dark text-light rounded mb-3 p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ item.producto.imageURL }}" alt="Producto" class="product-img me-3">
+                    </div>
+                    <div class="product-info text-center">
+                        <span class="product-name">{{ item.producto.producto }}</span>
+                    </div>
+                    <div class="product-info text-center">
+                        <label class=" d-block">Precio</label>
+                        <span class="product-price">${{ item.producto.precio|floatformat:2 }}</span>
+                    </div>
+                    <div class="product-info text-center">
+                        <label class="d-block">Cantidad</label>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <button class="btn btn-outline-light btn-sm me-2 btn-bajar" data-id="{{ item.id_itempedido }}">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <span class="product-quantity">{{ item.quantity }}</span>
+                            <button class="btn btn-outline-light btn-sm ms-2 btn-aumentar" data-id="{{ item.id_itempedido }}">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info text-center">
+                        <label class="d-block">Subtotal</label>
+                        <span class="product-total">${{ item.total|floatformat:2 }}</span>
+                    </div>
+                    <div class="product-info text-center">
+                        <button class="btn btn-outline-danger btn-sm btn-eliminar" data-id="{{ item.id_itempedido }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
+        <!-- Resumen -->
         <div class="col-lg-4">
-            <div class="card p-4" style="width: 100%; height: 221px;">
-                <h5 class="mb-4">Resumen de Compra</h5>
-                <h6>Total: $<span id="total-compra">0.00</span></h6>
-                <button class="btn btn-success w-100 mt-3" onclick="finalizarCompra()">Finalizar Compra</button>
+            <div class="summary bg-dark text-light rounded p-4">
+                <div class="summary-item mb-3">
+                    <span class="summary-title">Cantidad</span>
+                    <span id="cantidad-total" class="summary-value">{{ pedido.carrito_items }}</span>
+                </div>
+                <div class="summary-item mb-3">
+                    <span class="summary-title">Total</span>
+                    <span id="total-general" class="summary-value">${{ pedido.carrito_total|floatformat:2 }}</span>
+                </div>
+                <a class="btn btn-success w-100" href="{% url 'checkout' %}">Checkout</a>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Función para actualizar el subtotal de un item
+        function actualizarSubtotal(itemElement, itemId, quantity) {
+            const price = parseFloat(itemElement.querySelector('.product-price').textContent.replace('$', ''));
+            const subtotal = price * quantity;
+            itemElement.querySelector('.product-total').textContent = `$${subtotal.toFixed(2)}`;
+        }
+    
+        // Función para actualizar el resumen del carrito
+        function actualizarResumen(data) {
+            // Actualiza la cantidad total de artículos en el carrito
+            const cantidadElement = document.getElementById('cantidad-total');
+            cantidadElement.textContent = data.carrito_items;
+        
+            // Actualiza el total general del carrito
+            const totalElement = document.getElementById('total-general');
+            totalElement.textContent = `$${data.carrito_total.toFixed(2)}`;
+        }
+        
+        // Manejar botones "Bajar"
+        document.querySelectorAll('.btn-bajar').forEach(boton => {
+            boton.addEventListener('click', function () {
+                const itemId = this.dataset.id;
+                fetch(`/carrito/bajar/${itemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        const itemElement = this.closest('.product-item');
+                        const quantityElement = itemElement.querySelector('.product-quantity');
+                        const currentQuantity = parseInt(quantityElement.textContent);
+                        
+                        if (currentQuantity > 1) {
+                            quantityElement.textContent = currentQuantity - 1;
+                            actualizarSubtotal(itemElement, itemId, currentQuantity - 1);
+                        } else {
+                            itemElement.remove(); // Si la cantidad llega a 0, eliminamos el item
+                        }
+                        // Actualizamos el resumen después de bajar la cantidad
+                        actualizarResumen(data);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+        
+        // Manejar botones "Aumentar"
+        document.querySelectorAll('.btn-aumentar').forEach(boton => {
+            boton.addEventListener('click', function () {
+                const itemId = this.dataset.id;
+                fetch(`/carrito/aumentar/${itemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        const itemElement = this.closest('.product-item');
+                        const quantityElement = itemElement.querySelector('.product-quantity');
+                        const currentQuantity = parseInt(quantityElement.textContent);
+                        quantityElement.textContent = currentQuantity + 1;
+                        actualizarSubtotal(itemElement, itemId, currentQuantity + 1);
+                        // Actualizamos el resumen después de aumentar la cantidad
+                        actualizarResumen(data);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    
+        // Manejar botones "Eliminar"
+        document.querySelectorAll('.btn-eliminar').forEach(boton => {
+            boton.addEventListener('click', function () {
+                const itemId = this.dataset.id;
+                fetch(`/carrito/eliminar/${itemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        this.closest('.product-item').remove();
+                        // Actualizamos el resumen después de eliminar el item
+                        actualizarResumen(data);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+
+{% endblock content %}

@@ -1,4 +1,5 @@
 # santex-aquario
+<<<<<<< HEAD
 
 Proyecto hecho en santex aquario
 
@@ -8,4 +9,4 @@ En este proyecto los alumnos del colegio IPET 57 de la ciudad de Córdoba trabaj
 
 ## Autores
 
-- 
+
