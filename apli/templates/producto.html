@@ -2,25 +2,71 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5 pt-5">
-    <div class="row justify-content-center mt-5">
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
         {% for producto in productos %}
-        {% if forloop.counter0|divisibleby:3 and not forloop.first %}
-            </div>
-            <div class="row justify-content-center mt-4">
-        {% endif %}
 
-        <div class="col-md-4 d-flex justify-content-center">
-            <div class="card producto-card">
-                <img src="{% static 'descarga.png' %}" class="card-img-top producto-imagen" alt="{{ producto.producto }}">
-                <div class="card-body">
-                    <h5 class="card-title text-black">{{ producto.producto }}</h5>
-                    <p class="card-text text-black">$ {{ producto.precio }}</p>
-                    <a href="" class="btn btn-success btn-agregar" onclick="agregarAlCarrito('{{ producto.producto }}', {{ producto.precio }})">Agregar</a>
+        <div class="col mb-5">
+            <a href="{% url 'producto_views' producto.id %}" class="text-decoration-none text-dark">
+                <div class="card h-100" style="transition: transform 0.2s ease-in-out;">
+                    <img class="card-img-top thumbnail" src="{{ producto.imageURL }}" alt="imagen" />
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <h5 class="fw-bolder">{{ producto.producto }}</h5>
+                            ${{ producto.precio }}
+                        </div>
+                    </div>
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center">
+                            <button class="btn btn-outline-dark mt-auto agregar-carrito" 
+                                    data-producto-id="{{ producto.id }}">
+                                Agregar al carrito
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
+
+        <style>
+            .card:hover {
+                transform: scale(1.05); /* Incrementa ligeramente el tamaño */
+            }
+        </style>
+
         {% endfor %}
+        </div>
     </div>
-</div>
+</section>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const botones = document.querySelectorAll('.agregar-carrito');
+    
+        botones.forEach(boton => {
+            boton.addEventListener('click', function (event) {
+                event.preventDefault(); // Evita la redirección
+
+                const productoId = this.dataset.productoId;
+    
+                fetch(`/agregar-carrito/${productoId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    // Actualiza el contador del carrito
+                    const contador = document.getElementById('cart-counter');
+                    if (contador) {
+                        contador.textContent = data.carrito_items; // Actualiza con el nuevo total
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
 {% endblock %}
